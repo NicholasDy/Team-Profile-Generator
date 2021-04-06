@@ -35,13 +35,66 @@ const fs = require("fs")
 
 // have a function that rotates through a menu with inquirer 
 
-const Employee = require("./develop/lib/Employee")
+const employees = [], 
 
-const generateEl = new Employee();
+function startUp(){
+    getName()
+}
 
-generateEl.getName();
-      
 
+function getName() {
+    inquirer
+        .prompt([
+        {
+            type: 'list',
+            name: "startingrole",
+            message: "Who are you adding to your Team Profile?",
+            choices: ['Manager', 'Engineer', 'Intern']
+        },
+        {
+            type: 'list',
+            name: "name",
+            message: "What is the name of the team member?",
+        },
+        {
+            type: 'list',
+            name: "id",
+            message: "What is your employee ID?",
+        },
+        {
+            type: 'list',
+            name: "email",
+            message: "What is their email?",
+        },
+        ])
+        .then(val => {
+            let roleInfo = " ";
+            switch(val.startingrole){
+                case "Manager":
+                    roleInfo = "What is their Office Number?";
+                    break;
+                case "Engineer":
+                    roleInfo = "What is their GitHub Username?"
+                    break;
+                case "Intern":
+                    roleInfo = "What school did they go to?"
+                    break;
+            }
+        })
+        .then(function 
+            inquirer
+                .prompt([
+                    {
+                        type:"list",
+                        name:"sideinfo",
+                        message:`${roleInfo}`
+                    }
+                ])
+        })
+
+
+}
+}
 
 
 // // Uses inquirer to prompt the user for their guess
@@ -124,3 +177,6 @@ generateEl.getName();
 //         process.exit(0);
 //     }
 // }
+
+
+startUp();
