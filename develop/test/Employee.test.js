@@ -13,7 +13,7 @@ const Employee = require("../lib/Employee")
 
 describe("Employee Class", () => {
     it("There should be no numbers in the name", () => {
-        expect(new Employee("a").getName()).toBe(true)
+        expect(new Employee("Nick").toBe(true)
     });
     it("Returns an alert for a name with a number", () => {
         expect(new Employee("8").getName()).toBe(false)

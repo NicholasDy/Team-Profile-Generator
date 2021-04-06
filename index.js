@@ -35,9 +35,9 @@ const fs = require("fs")
 
 // have a function that rotates through a menu with inquirer 
 
-const employees = [], 
+const employees = [],
 
-function startUp(){
+function startUp() {
     getName()
 }
 
@@ -45,31 +45,31 @@ function startUp(){
 function getName() {
     inquirer
         .prompt([
-        {
-            type: 'list',
-            name: "startingrole",
-            message: "Who are you adding to your Team Profile?",
-            choices: ['Manager', 'Engineer', 'Intern']
-        },
-        {
-            type: 'list',
-            name: "name",
-            message: "What is the name of the team member?",
-        },
-        {
-            type: 'list',
-            name: "id",
-            message: "What is your employee ID?",
-        },
-        {
-            type: 'list',
-            name: "email",
-            message: "What is their email?",
-        },
+            {
+                type: 'list',
+                name: "startingrole",
+                message: "Who are you adding to your Team Profile?",
+                choices: ['Manager', 'Engineer', 'Intern']
+            },
+            {
+                type: 'list',
+                name: "name",
+                message: "What is the name of the team member?",
+            },
+            {
+                type: 'list',
+                name: "id",
+                message: "What is your employee ID?",
+            },
+            {
+                type: 'list',
+                name: "email",
+                message: "What is their email?",
+            },
         ])
-        .then(val => {
+        .then(function ({startingrole, name, id, email}) {
             let roleInfo = " ";
-            switch(val.startingrole){
+            switch (startingrole) {
                 case "Manager":
                     roleInfo = "What is their Office Number?";
                     break;
@@ -81,20 +81,17 @@ function getName() {
                     break;
             }
         })
-        .then(function 
+        .then( () => {
             inquirer
                 .prompt([
                     {
-                        type:"list",
-                        name:"sideinfo",
-                        message:`${roleInfo}`
+                        type: "list",
+                        name: "sideinfo",
+                        message: `${roleInfo}`
                     }
                 ])
         })
-
-
-}
-}
+    }
 
 
 // // Uses inquirer to prompt the user for their guess
