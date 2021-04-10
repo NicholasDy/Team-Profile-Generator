@@ -1,5 +1,9 @@
 const inquirer = require("inquirer");
-const fs = require("fs")
+const fs = require("fs");
+const Manager = require("./lib/Manager");
+const Engineer = require("./lib/Engineer");
+const Intern = require("./lib/Intern");
+const { resolve } = require("path");
 // GIVEN a command-line application that accepts user input
 
 // WHEN I am prompted for my team members and their information
@@ -35,145 +39,199 @@ const fs = require("fs")
 
 // have a function that rotates through a menu with inquirer 
 
-const employees = [],
+const employees = [];
 
-function startUp() {
-    getName()
+function init() {
+    getName();
+    startHTML()
 }
-
 
 function getName() {
     inquirer
         .prompt([
             {
-                type: 'list',
-                name: "startingrole",
-                message: "Who are you adding to your Team Profile?",
-                choices: ['Manager', 'Engineer', 'Intern']
-            },
-            {
-                type: 'list',
+                type: 'input',
                 name: "name",
                 message: "What is the name of the team member?",
             },
             {
-                type: 'list',
+                type: 'input',
                 name: "id",
                 message: "What is your employee ID?",
             },
             {
-                type: 'list',
+                type: 'input',
                 name: "email",
                 message: "What is their email?",
             },
+            {
+                type: 'list',
+                name: "startingrole",
+                message: "Who are you adding to your Team Profile?",
+                choices: ['Manager', 'Engineer', 'Intern']
+            }
         ])
-        .then(function ({startingrole, name, id, email}) {
+        .then(function ({ name, id, email, startingrole }) {
+            console.log(name)
             let roleInfo = " ";
             switch (startingrole) {
                 case "Manager":
                     roleInfo = "What is their Office Number?";
-                    break;
+                    break
                 case "Engineer":
                     roleInfo = "What is their GitHub Username?"
-                    break;
+                    break
                 case "Intern":
                     roleInfo = "What school did they go to?"
-                    break;
+                    break
             }
-        })
-        .then( () => {
             inquirer
                 .prompt([
                     {
-                        type: "list",
+                        type: "input",
                         name: "sideinfo",
                         message: `${roleInfo}`
+                    },
+                    {
+                        type: "list",
+                        name: "addingpeople",
+                        message: "Do you want to add more team members?",
+                        choices: ["yes", "no"]
                     }
                 ])
+                .then(function ({ sideinfo, addingpeople }) {
+                    let newMember;
+                    switch (startingrole) {
+                        case "Manager":
+                            newMember = new Manager(name, id, email, sideinfo)
+                            console.log(sideinfo)
+                            break
+                        case "Engineer":
+                            newMember = new Engineer(name, id, email, sideinfo)
+                            console.log(sideinfo)
+                            break
+                        case "Intern":
+                            newMember = new Intern(name, id, email, sideinfo)
+                            console.log(sideinfo)
+                            break
+                    }
+                    employees.push(newMember);
+                    addHtml(newMember)
+                    console.log("person added")
+                    setTimeout(()=>{
+                        switch(addingpeople){
+                        case "yes":
+                            console.log('add');
+                            getName();
+                            break
+                        default:
+                            console.log('end')
+                            endHtml();
+                            break
+                        }
+                    },100)
+                    
+                });
         })
-    }
+}
 
+function startHTML() {
+    const html = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+        <link rel="stylesheet" href="/style.css">
+        <title>Team Profile Generator</title>
+    </head>
+    <body>
+        <header class="bg-danger text-white text-center text-lg">My Team</header>
+        <div class="cardinput">
+            
+        `
+    fs.writeFile("index.html", html, function (err) {
+        if (err) {
+            console.log(err);
+        }
+    })
+}
 
-// // Uses inquirer to prompt the user for their guess
-// makeGuess() {
-//         this.askForLetter().then(() => {
-//             // If the user has no guesses remaining after this guess, show them the word, ask if they want to play again
-//             if (this.guessesLeft < 1) {
-//                 console.log(
-//                     'No guesses left! Word was: "' +
-//                     this.currentWord.getSolution() +
-//                     '"\n'
-//                 );
-//                 this.askToPlayAgain();
+function addHtml(newMember) {
+    console.log("adding person")
+    const name = newMember.getName()
+    const id = newMember.getId()
+    const email = newMember.getEmail()
+    const role = newMember.getRole()
+    let data = ""
+    return new Promise(function (resolve, reject) {
+        switch (role) {
+            case "Manager":
+                const officenumber = newMember.getOfficeNumber()
+                data = `
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">${role}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">${name}</h6>
+            <p class="card-text">${id}</p>
+            <p class="card-text">${email}</p>
+            <p class="card-text">${officenumber}</p>
+        </div>
+        </div>
+        `
+                break
+            case "Engineer":
+                const gitHub = newMember.getGitHub()
+                data = `
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">${role}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">${name}</h6>
+            <p class="card-text">${id}</p>
+            <p class="card-text">${email}</p>
+            <a href="https://github.com/${gitHub}" class="card-link">${gitHub}</a>
+        </div>
+        </div>
+                `
+                break
+            case "Intern":
+                const school = newMember.getSchool()
+                data = `
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">${role}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">${name}</h6>
+            <p class="card-text">${id}</p>
+            <p class="card-text">${email}</p>
+            <p class="card-text">${school}</p>
+        </div>
+        </div>
+                        `
+                break
+        }
+        fs.appendFile("index.html", data, function (err) {
+            if (err) {
+                console.log(err);
+            }
+            return resolve
+        })
+    })
+}
 
-//                 // If the user guessed all letters of the current word correctly, reset guessesLeft to 10 and get the next word
-//             } else if (this.currentWord.guessedCorrectly()) {
-//                 console.log("You got it right! Next word!");
-//                 this.guessesLeft = 10;
-//                 this.nextWord();
+function endHtml() {
+        console.log("ending Html")
+        const html = `   
+    </div>      
+</body>
+</html>`;
+    
+        fs.appendFile("index.html", html, function (err) {
+            if (err) {
+                console.log(err);
+            };
+        });
+}
 
-//                 // Otherwise prompt the user to guess the next letter
-//             } else {
-//                 this.makeGuess();
-//             }
-//         });
-//     }
-
-// // Asks the user if they want to play again after running out of guessesLeft
-// askToPlayAgain() {
-//         inquirer
-//         .prompt([
-//             {
-//                 type: "confirm",
-//                 name: "choice",
-//                 message: "Play Again?"
-//             }
-//         ])
-//             .then(val => {
-//                 // If the user says yes to another game, play again, otherwise quit the game
-//                 if (val.choice) {
-//                     this.play();
-//                 } else {
-//                     this.quit();
-//                 }
-//             });
-//     }
-
-// // Prompts the user for a letter
-// askForLetter() {
-//         return inquirer
-//             .prompt([
-//                 {
-//                     type: "input",
-//                     name: "choice",
-//                     message: "Guess a letter!",
-//                     // The users guess must be a number or letter
-//                     validate: val => /[a-z1-9]/gi.test(val),
-//                 }
-//             ])
-//             .then(val => {
-//                 // If the user's guess is in the current word, log that they chose correctly
-//                 const didGuessCorrectly = this.currentWord.guessLetter(val.choice);
-//                 if (didGuessCorrectly) {
-//                     console.log(chalk.green("\nCORRECT!!!\n"));
-
-//                     // Otherwise decrement `guessesLeft`, and let the user know how many guesses they have left
-//                 } else {
-//                     this.guessesLeft--;
-//                     console.log(chalk.red("\nINCORRECT!!!\n"));
-//                     console.log(this.guessesLeft + " guesses remaining!!!\n");
-//                 }
-
-//                 console.log(this.currentWord.toString() + "\n");
-//             });
-//     }
-
-// // Logs goodbye and exits the node app
-// quit() {
-//         console.log("\nGoodbye!");
-//         process.exit(0);
-//     }
-// }
-
-
-startUp();
+init();
