@@ -149,7 +149,7 @@ function startHTML() {
     </head>
     <body>
         <header class="bg-danger text-white text-center text-lg">My Team</header>
-        <div class="cardinput">
+        <div class="cardinput d-flex justify-content-around">
             
         `
     fs.writeFile("index.html", html, function (err) {
@@ -191,7 +191,7 @@ function addHtml(newMember) {
             <h6 class="card-subtitle mb-2 text-muted">${name}</h6>
             <p class="card-text">${id}</p>
             <p class="card-text">${email}</p>
-            <a href="https://github.com/${gitHub}" class="card-link">${gitHub}</a>
+            <a href="https://github.com/${gitHub}" target="_blank" class="card-link">${gitHub}</a>
         </div>
         </div>
                 `
